@@ -1,16 +1,746 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>DevNull.Tech</title>
-  </head>
-  <body>
-    <b>404 Error! Page not found...</b>
-    <br>
-    <br>
-    <br>
-    <br>
-    <p>Just kidding, you're in the right place.</p>
-    <p>New Page Coming Soon!</p>
-  </body>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>/dev/null — devnull.tech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:          #0d0f0e;
+    --surface:     #131615;
+    --border:      #1e2420;
+    --border2:     #2a312d;
+    --accent:      #4ade80;   /* terminal green — primary */
+    --accent2:     #f7931a;   /* orange — secondary */
+    --accent3:     #60a5fa;   /* info blue */
+    --warn:        #fbbf24;
+    --danger:      #f87171;
+    --text:        #d4d8d5;
+    --muted:       #7a8a7f;
+    --code-bg:     #0a0c0b;
+    --code-border: #1e2a20;
+    --timegate:    #a78bfa;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14.5px;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  /* ── Sidebar ── */
+  #sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 260px;
+    height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 32px 0 24px;
+    z-index: 100;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    padding: 0 24px 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+    line-height: 1.4;
+  }
+  .sidebar-logo .prompt {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 4px;
+    letter-spacing: 0.08em;
+  }
+  .sidebar-logo .url {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 300;
+    display: block;
+    margin-top: 4px;
+  }
+
+  .nav-section-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    padding: 0 24px 8px;
+  }
+
+  .nav-links { list-style: none; margin-bottom: 24px; }
+
+  .nav-links a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 24px;
+    border-left: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .nav-links a .link-prefix {
+    color: var(--accent);
+    font-size: 10px;
+    opacity: 0.6;
+  }
+  .nav-links a:hover {
+    color: var(--text);
+    border-left-color: var(--border2);
+  }
+  .nav-links a.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: rgba(74,222,128,0.05);
+  }
+  .nav-links a.stub {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  .nav-links a.stub::after {
+    content: 'soon';
+    font-size: 9px;
+    margin-left: auto;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 16px 24px 0;
+    border-top: 1px solid var(--border);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+  }
+  .sidebar-footer .uptime {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .uptime-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.35; }
+  }
+  .sidebar-footer .fs-line {
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 8px;
+    opacity: 0.5;
+  }
+
+  /* ── Main ── */
+  #main { margin-left: 260px; }
+
+  /* ── Hero ── */
+  #hero {
+    background: linear-gradient(135deg, #090b0a 0%, #0b0f0c 50%, #080b09 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 80px 64px 72px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Scanline overlay */
+  #hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Green glow top-left */
+  .hero-glow {
+    position: absolute;
+    top: -80px; left: -80px;
+    width: 420px; height: 420px;
+    background: radial-gradient(circle, rgba(74,222,128,0.07) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  #hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent) 0%, transparent 60%);
+  }
+
+  .hero-inner { position: relative; z-index: 1; }
+
+  .hero-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .hero-tag::before {
+    content: '';
+    display: block;
+    width: 32px; height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-prompt {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .hero-prompt .ps1 { color: var(--accent); }
+  .hero-prompt .host { color: var(--accent3); }
+  .hero-prompt .sep { color: var(--muted); margin: 0 2px; }
+  .hero-prompt .path { color: var(--accent2); }
+  .hero-prompt .dollar { color: var(--text); margin-left: 6px; }
+
+  #hero h1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 38px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+  #hero h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+  #hero h1 .cursor {
+    display: inline-block;
+    width: 3px;
+    height: 0.85em;
+    background: var(--accent);
+    margin-left: 4px;
+    vertical-align: middle;
+    animation: blink 1.1s step-end infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .hero-desc {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 580px;
+    margin-bottom: 36px;
+    line-height: 1.75;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 0;
+    flex-wrap: wrap;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    max-width: 620px;
+  }
+  .hero-meta-item {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 16px;
+    border-right: 1px solid var(--border);
+    background: rgba(0,0,0,0.2);
+  }
+  .hero-meta-item:last-child { border-right: none; }
+  .hero-meta-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .hero-meta-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  /* ── Content ── */
+  .content {
+    max-width: 860px;
+    padding: 0 64px 120px;
+  }
+
+  /* ── Section ── */
+  .section { padding-top: 72px; }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--border2) 0%, transparent 80%);
+  }
+
+  .section h2 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    color: #e8ede9;
+    margin-bottom: 20px;
+  }
+  .section h3 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--accent);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    margin: 32px 0 16px;
+  }
+
+  p { margin-bottom: 16px; }
+
+  /* ── Code block ── */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 20px 0;
+  }
+  .code-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    padding: 7px 14px;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--code-border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .code-label::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.6;
+  }
+  .code-block pre {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: #c8d0c9;
+    padding: 16px 18px;
+    overflow-x: auto;
+  }
+  .cmd { color: var(--accent); }
+  .cmt { color: var(--muted); font-style: italic; }
+  .val { color: var(--accent3); }
+  .out { color: var(--muted); }
+
+  /* ── Link cards (future pages) ── */
+  .link-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+
+  .link-card {
+    background: var(--surface);
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-decoration: none;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .link-card:not(.link-card--stub):hover {
+    background: #161a17;
+  }
+  .link-card--stub {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .link-card-path {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+  }
+  .link-card--stub .link-card-path { color: var(--muted); }
+  .link-card-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+  .link-card-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    width: fit-content;
+    margin-top: 4px;
+  }
+  .badge-live {
+    background: rgba(74,222,128,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(74,222,128,0.25);
+  }
+  .badge-soon {
+    background: rgba(122,138,127,0.08);
+    color: var(--muted);
+    border: 1px solid var(--border2);
+  }
+
+  /* ── Callout ── */
+  .callout {
+    border-left: 3px solid;
+    border-radius: 0 4px 4px 0;
+    padding: 14px 18px;
+    margin: 24px 0;
+  }
+  .callout-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 6px;
+  }
+  .callout.info  { border-color: var(--accent3); background: rgba(96,165,250,0.05); }
+  .callout.info .callout-title { color: var(--accent3); }
+  .callout.warn  { border-color: var(--warn); background: rgba(251,191,36,0.05); }
+  .callout.warn .callout-title { color: var(--warn); }
+
+  /* ── Divider ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 56px 0;
+  }
+
+  /* ── Footer ── */
+  footer {
+    margin-left: 260px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 20px 64px;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  footer span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    padding: 0 16px;
+    border-right: 1px solid var(--border);
+  }
+  footer span:last-child { border-right: none; }
+
+  /* ── Responsive ── */
+  @media (max-width: 800px) {
+    #sidebar { display: none; }
+    #main, footer { margin-left: 0; }
+    #hero, .content { padding-left: 24px; padding-right: 24px; }
+    .link-grid { grid-template-columns: 1fr; }
+    .hero-meta { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ SIDEBAR ══════════════════ -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <span class="prompt">root@devnull ~ $</span>
+    /dev/null
+    <span class="url">devnull.tech</span>
+  </div>
+
+  <p class="nav-section-title">Pages</p>
+  <ul class="nav-links">
+    <li><a href="#" class="active"><span class="link-prefix">~/</span>index</a></li>
+    <li><a href="#" class="stub"><span class="link-prefix">~/</span>about</a></li>
+    <li><a href="#" class="stub"><span class="link-prefix">~/</span>projects</a></li>
+    <li><a href="#" class="stub"><span class="link-prefix">~/</span>notes</a></li>
+    <li><a href="#" class="stub"><span class="link-prefix">~/</span>contact</a></li>
+  </ul>
+
+  <p class="nav-section-title">On This Page</p>
+  <ul class="nav-links">
+    <li><a href="#about" id="nav-about"><span class="link-prefix">#</span>about</a></li>
+    <li><a href="#pages" id="nav-pages"><span class="link-prefix">#</span>pages</a></li>
+    <li><a href="#fs" id="nav-fs"><span class="link-prefix">#</span>filesystem</a></li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <div class="uptime">
+      <div class="uptime-dot"></div>
+      online
+    </div>
+    <div class="fs-line">devnull.tech · v0.1.0</div>
+  </div>
+</nav>
+
+<!-- ══════════════════ MAIN ══════════════════ -->
+<main id="main">
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div class="hero-tag">devnull.tech · index</div>
+
+      <div class="hero-prompt">
+        <span class="ps1">root</span>
+        <span class="sep">@</span>
+        <span class="host">devnull</span>
+        <span class="sep">:</span>
+        <span class="path">~</span>
+        <span class="dollar">$</span>
+        &nbsp;cat README
+      </div>
+
+      <h1>Everything goes<br>into <em>/dev/null</em>.<span class="cursor"></span></h1>
+
+      <p class="hero-desc">
+        A personal corner of the internet. Work in progress — deliberately and indefinitely. 
+        Pages get added when they're ready, not before.
+      </p>
+
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Host</div>
+          <div class="hero-meta-value">devnull.tech</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Status</div>
+          <div class="hero-meta-value">online</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Pages</div>
+          <div class="hero-meta-value">1 / ∞</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="hero-meta-label">Version</div>
+          <div class="hero-meta-value">v0.1.0</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- About -->
+    <section class="section" id="about">
+      <div class="section-label">00 — About</div>
+      <h2>What is this?</h2>
+
+      <p>
+        <code style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--accent3);">/dev/null</code> 
+        is the Unix black hole — anything written to it disappears without a trace. 
+        That's a reasonable description of most personal websites too.
+      </p>
+      <p>
+        This one is being built in the open, mostly as a learning exercise. The design system 
+        is intentional; the content is still catching up. Check back when the nav links 
+        stop being grayed out.
+      </p>
+
+      <div class="code-block">
+        <div class="code-label">shell</div>
+        <pre><span class="cmd">ls -la /dev/null</span>
+<span class="out">crw-rw-rw-  1 root  wheel  3, 2  devnull.tech</span>
+
+<span class="cmd">echo "hello world" > /dev/null</span>
+<span class="cmt"># output: none. that's the point.</span></pre>
+      </div>
+
+      <div class="callout info">
+        <div class="callout-title">Work In Progress</div>
+        This site is actively being built. Pages marked <em>soon</em> in the nav exist 
+        as stubs and will be filled in over time.
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- Pages -->
+    <section class="section" id="pages">
+      <div class="section-label">01 — Pages</div>
+      <h2>Site Map</h2>
+      <p>What's here now and what's planned. Links go live when content is ready.</p>
+
+      <div class="link-grid">
+
+        <a href="/" class="link-card">
+          <div class="link-card-path">~/index</div>
+          <div class="link-card-desc">You are here. Landing page and site overview.</div>
+          <span class="link-card-badge badge-live">live</span>
+        </a>
+
+        <a href="#" class="link-card link-card--stub">
+          <div class="link-card-path">~/about</div>
+          <div class="link-card-desc">Background, interests, what I'm working on.</div>
+          <span class="link-card-badge badge-soon">soon</span>
+        </a>
+
+        <a href="#" class="link-card link-card--stub">
+          <div class="link-card-path">~/projects</div>
+          <div class="link-card-desc">Things I've built — documented properly.</div>
+          <span class="link-card-badge badge-soon">soon</span>
+        </a>
+
+        <a href="#" class="link-card link-card--stub">
+          <div class="link-card-path">~/notes</div>
+          <div class="link-card-desc">Short-form writing. No guarantees on quality or frequency.</div>
+          <span class="link-card-badge badge-soon">soon</span>
+        </a>
+
+        <a href="#" class="link-card link-card--stub">
+          <div class="link-card-path">~/contact</div>
+          <div class="link-card-desc">How to reach me. Spoiler: email.</div>
+          <span class="link-card-badge badge-soon">soon</span>
+        </a>
+
+        <a href="#" class="link-card link-card--stub">
+          <div class="link-card-path">~/uses</div>
+          <div class="link-card-desc">Tools, hardware, software. The usual.</div>
+          <span class="link-card-badge badge-soon">soon</span>
+        </a>
+
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- Filesystem metaphor section -->
+    <section class="section" id="fs">
+      <div class="section-label">02 — Filesystem</div>
+      <h2>Directory Structure</h2>
+      <p>How this site is organized, in terms the OS understands.</p>
+
+      <div class="code-block">
+        <div class="code-label">tree</div>
+        <pre><span class="cmd">tree devnull.tech/</span>
+
+<span class="val">devnull.tech/</span>
+├── <span class="cmd">index.html</span>          <span class="cmt"># this page</span>
+├── <span class="out">about/</span>              <span class="cmt"># planned</span>
+├── <span class="out">projects/</span>           <span class="cmt"># planned</span>
+│   └── <span class="out">[project-slug]/</span> <span class="cmt"># one per project</span>
+├── <span class="out">notes/</span>              <span class="cmt"># planned</span>
+│   └── <span class="out">[slug].html</span>
+├── <span class="out">contact/</span>            <span class="cmt"># planned</span>
+└── <span class="out">uses/</span>               <span class="cmt"># planned</span>
+
+<span class="cmt"># All paths are flat HTML — no framework, no build step (yet)</span></pre>
+      </div>
+
+      <div class="callout warn">
+        <div class="callout-title">No Framework</div>
+        This site is plain HTML/CSS/JS. That's a deliberate choice for now — 
+        good for learning, easy to deploy, zero dependencies to break.
+      </div>
+    </section>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<footer>
+  <span>devnull.tech</span>
+  <span>v0.1.0</span>
+  <span>plain html · no framework</span>
+  <span>work in progress</span>
+</footer>
+
+<script>
+  // Scroll spy for on-page sections
+  const navMap = {
+    'about': document.getElementById('nav-about'),
+    'pages': document.getElementById('nav-pages'),
+    'fs':    document.getElementById('nav-fs'),
+  };
+  const sections = Object.keys(navMap).map(id => document.getElementById(id));
+
+  function onScroll() {
+    const scrollY = window.scrollY + 100;
+    let current = null;
+    for (const s of sections) {
+      if (s && s.offsetTop <= scrollY) current = s;
+    }
+    Object.values(navMap).forEach(a => a && a.classList.remove('active'));
+    if (current && navMap[current.id]) navMap[current.id].classList.add('active');
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>
+</body>
 </html>
